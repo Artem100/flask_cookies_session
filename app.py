@@ -5,6 +5,7 @@ app.secret_key = b'*EF63./w[9'
 
 @app.route('/')
 def main_point():
+    # Не передается имя авторизированного пользователя на страницу index.html
     visit_counter = 0
     if session.get('visited'):
         visit_counter = session['visited']
@@ -18,17 +19,18 @@ def main_point():
 def login_page():
     # Не послучается связать условия куки и юзера
     log = ""
-    if request.method == 'GET':
-        if request.cookies.get('logged'):
-            return render_template('login.html')
-        elif log == "yes":
-            return render_template('index.html')
+    if request.method == 'GET' and log == "":
+        # if request.cookies.get('logged'):
+        log = request.cookies.get('logged')
+        return render_template('login.html')
+    elif log == "yes":
+        return render_template('index.html')
     elif request.method == 'POST':
         username = request.form['username']
         request.cookies.get('logged')
         response = make_response(render_template('index.html', username=username))
         response.set_cookie("logged", "yes")
-        return response
+        return f"User logged in as: <b>{username}</b>"
 
 
 # @app.route('/cookies')
