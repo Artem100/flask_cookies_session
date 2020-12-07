@@ -15,23 +15,40 @@ def main_point():
     session['visited'] += 1
     return response
 
+# @app.route('/login', methods=['GET', 'POST'])
+# def login_page():
+#     # Не послучается связать условия куки и юзера
+#     username = ""
+#     log = ""
+#     if request.method == 'GET' and log == "":
+#         # if request.cookies.get('logged'):
+#         log = request.cookies.get('logged')
+#         return render_template('login.html')
+#     elif log == "yes":
+#         return render_template('index.html')
+#     elif request.method == 'POST':
+#         username = request.form['username']
+#         request.cookies.get('logged')
+#         response = make_response(render_template('index.html', username=username))
+#         # Не передает ли username в темплейт значение
+#         response.set_cookie("logged", "yes")
+#         return f"User logged in as: <b>{username}</b>"
+#     return username
+
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
-    # Не послучается связать условия куки и юзера
-    log = ""
-    if request.method == 'GET' and log == "":
-        # if request.cookies.get('logged'):
-        log = request.cookies.get('logged')
-        return render_template('login.html')
-    elif log == "yes":
-        return render_template('index.html')
+    if request.method == 'GET':
+        # в случае гет запроса нам надо отрисовать форму для логина если сессия пустая или вывести теймплейт что пользователь залогинен
+        if session.get('username'):
+            return render_template('index.html', username=session.get('username'))
+        else:
+            return render_template('login.html')
     elif request.method == 'POST':
+        # берем с пост запроса юзернейм
         username = request.form['username']
-        request.cookies.get('logged')
-        response = make_response(render_template('index.html', username=username))
-        response.set_cookie("logged", "yes")
-        return f"User logged in as: <b>{username}</b>"
-
+        # здесь сохраняем юзернейм в сессию тут мы будем знать что юзер залогинен
+        session['username'] = username
+        return make_response(render_template('index.html', username=session['username']))
 
 # @app.route('/cookies')
 # def cokie_page():
